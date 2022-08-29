@@ -41,55 +41,75 @@ class sorted_view: public std::ranges::view_interface <sorted_view <Range, Comp>
     using Item = std::ranges::range_value_t <Range>;
     using Iterator_Type = typename Range::iterator;
 
-    Range &range;
+    Range * const range;
     //std::vector <typename Range::value_type *> pointers;
-    std::vector <long> pointers;
     const Comp comp_;
     pointer_op <Item, Comp> op;
+    std::vector <long> pointers;
 
-    constexpr void update_pointers () {
-        op.base_ = &(*range.begin ());
+    constexpr void update_pointers (bool merge = false) {
+        op.base_ = &(*range->begin ());
         if constexpr (std::contiguous_iterator <Iterator_Type>) {
             const auto pointers_size = pointers.size ();
-            pointers.resize (range.size ());
-            if (range.size () > pointers_size) {
+            pointers.resize (range->size ());
+            if (range->size () > pointers_size) {
                 std::iota (pointers.begin () + pointers_size, pointers.end (), pointers_size);
             }
         }
         else {
-            pointers.clear ();
-            pointers.reserve (range.size ());
-            const auto range_start_pointer = &(*range.begin ());
-            for (auto &item: range) {
-                pointers.push_back (&item - range_start_pointer);
+            if (merge) {
+                auto it = range->crbegin (); 
+                const auto new_items = range->size () - pointers.size ();
+                pointers.reserve (range->size ());
+                for (auto i = new_items; i > 0; i--) {
+                    pointers.push_back (&(*it) - op.base_);
+                    it ++;
+                }
+            }
+            else {
+                pointers.clear ();
+                pointers.reserve (range->size ());
+                const auto range_start_pointer = &(*range->begin ());
+                for (auto &item: *range) {
+                    pointers.push_back (&item - range_start_pointer);
+                }
             }
         }
     }
 
 public:
     constexpr explicit sorted_view (Range &arr, Comp comp = {}): 
-        range {arr}, 
+        range {&arr}, 
         comp_ {comp},
-        op (&(*range.begin ()), comp_) {
-
+        op (&(*range->begin ()), comp_) {
     }
 
-    constexpr sorted_view (const sorted_view &sv): range {sv.sv}, comp_ {sv.comp_} {}
+    constexpr sorted_view (const sorted_view &sv): 
+        range {sv.range}, comp_ {sv.comp_}, op {sv.op}, pointers {sv.pointers} {}
+
+
+    constexpr sorted_view (sorted_view &&sv): 
+        range {sv.range}, comp_ {sv.comp_}, op {sv.op} {
+            pointers = std::move (sv.pointers);
+            sv.range = nullptr;
+            op.base_ = nullptr;
+        }
 
     constexpr auto begin () {
-        if (pointers.size () != range.size ()) {
+        if (pointers.size () != range->size () || op.base_ != &(*range->begin ())) {
             resort ();
         }
-        return view_iterator (&(*range.begin ()), &(*pointers.begin ()));
+        return view_iterator (&(*range->begin ()), &(*pointers.begin ()));
     }
 
     constexpr auto end () {
-        return view_iterator (&(*range.begin ()), &(*pointers.end ()));
+        return view_iterator (&(*range->begin ()), &(*pointers.end ()));
     }
 
-    constexpr void merge_from_back (long new_items) {
-        update_pointers ();
-        const auto sorted_offset = pointers.begin () + pointers.size () - new_items;
+    constexpr void merge_from_back () {
+        auto old_pointers_size = pointers.size ();
+        update_pointers (true);
+        const auto sorted_offset = pointers.begin () + old_pointers_size;
         std::sort (sorted_offset, pointers.end (), op);
         std::inplace_merge (pointers.begin (), sorted_offset, pointers.end (), op);
     }
@@ -97,6 +117,13 @@ public:
     constexpr void resort () {
         update_pointers ();
         std::ranges::sort (pointers, op);
+    }
+
+    constexpr void check_resort () {
+        update_pointers ();
+        if (!std::is_sorted (pointers, op)) {
+            std::ranges::sort (pointers, op);
+        }
     }
 
     struct view_iterator {
