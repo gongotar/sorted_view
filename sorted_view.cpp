@@ -92,7 +92,7 @@ public:
         range {sv.range}, comp_ {sv.comp_}, op {sv.op} {
             pointers = std::move (sv.pointers);
             sv.range = nullptr;
-            op.base_ = nullptr;
+            sv.op.base_ = nullptr;
         }
 
     constexpr auto begin () {
