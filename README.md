@@ -5,7 +5,7 @@ A sorted view on the given std::range type.
 
 ```cpp
 template <typename L1, typename L2>
-void print_arrays (const std::string &out, L1 &l1, L2 &&l2) {
+void print_arrays (const std::string &out, L1 &&l1, L2 &&l2) {
     std::cout << out << '\n';
     for (const auto &v: l1) std::cout << v << ' ';
     std::cout << '\n';
