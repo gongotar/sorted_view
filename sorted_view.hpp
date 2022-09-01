@@ -44,7 +44,6 @@ class sorted_view: public std::ranges::view_interface <sorted_view <Range, Comp>
     using Iterator_Type = typename Range::iterator;
 
     Range * const range;
-    //std::vector <typename Range::value_type *> pointers;
     const Comp comp_;
     pointer_op <Item, Comp> op;
     std::vector <long> pointers;
@@ -100,8 +99,8 @@ public:
             sv.op.base_ = nullptr;
         }
 
-    constexpr auto begin () {
-        check_resort ();
+    constexpr auto begin (bool check_sorted = true) {
+        check_resort (check_sorted);
         return view_iterator (&(*range->begin ()), &(*pointers.begin ()));
     }
 
@@ -122,10 +121,10 @@ public:
         std::ranges::sort (pointers, op);
     }
 
-    constexpr void check_resort () {
-        if (pointers.size () != range->size () || op.base_ != &(*range->begin ()) || !std::ranges::is_sorted (pointers, op)) {
-            update_pointers ();
-            std::ranges::sort (pointers, op);
+    constexpr void check_resort (bool check_sorted = true) {
+        if ((pointers.size () != range->size () || op.base_ != &(*range->begin ()))
+            || (check_sorted && !std::ranges::is_sorted (pointers, op))) {
+            resort ();
         }
     }
     
@@ -135,7 +134,7 @@ public:
     } 
 
     constexpr Item &at (long i) {
-        return *(begin () + i);
+        return *(begin (false) + i);
     }
 
     struct view_iterator {
