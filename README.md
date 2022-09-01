@@ -4,7 +4,7 @@ Produces a sorted view of a given array (`std::vector`, `std::list`, `std::array
 
 ## Manual
 
-You can construct a sorted view of an array (`arr`) with a custom comparator, as follows:
+You can construct a sorted view of an array `arr` with a custom comparator, as follows:
 ```
 sorted_view sv (arr, [] (const auto &a, const auto &b) {return a.attr < b.attr;});
 ```
@@ -15,16 +15,7 @@ for (const auto &item: sv) {    // here the sorted view is computed, if it is no
     ...
 }
 ```
-
-Alternativly, if you know how many items are added to the back of the array, you can manually merge them in the sorted list to prevent sorting the view from scratch, and improve the performance:
-```
-arr.push_back (item1);
-arr.push_back (item2);
-arr.push_back (item3);
-sv.merge_from_back ();      // the recently added items are merged into the sorted view
-```
-
-You can also manually resort the sorted view completely, in the more complicated scenarios:
+You can also manually resort (recompute) the sorted view, if the array is modified (i.e., some items are deleted and/or inserted):
 ```
 sv.resort ();
 ```
@@ -33,6 +24,16 @@ Or, perform the sort operation if the sorted view is not already sorted:
 ```
 sv.check_resort ();
 ```
+
+Alternativly, if you know how many items are added to the back of the array, you can merge them in the sorted list to prevent sorting the view from scratch, and improve the performance:
+```
+arr.push_back (item1);
+arr.push_back (item2);
+arr.push_back (item3);
+sv.merge_from_back ();      // the recently added items are merged into the sorted view
+```
+
+
 
 
 ## Sample Usage:
