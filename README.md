@@ -36,7 +36,12 @@ arr.push_back (item3);
 sv.merge_from_back ();      // the recently added items are merged into the sorted view
 ```
 
+Moreover, each element is accessible using [] operator and `at (long)` method:
+```
+std::cout << sv [3] << std::endl;
+std::cout << sv.at (5) << std::endl;
 
+```
 
 
 ## Sample Usage:
