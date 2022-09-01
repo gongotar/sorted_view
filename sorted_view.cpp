@@ -121,7 +121,7 @@ public:
 
     constexpr void check_resort () {
         update_pointers ();
-        if (!std::is_sorted (pointers, op)) {
+        if ((pointers.size () != range->size () || op.base_ != &(*range->begin ())) || !std::is_sorted (pointers, op)) {
             std::ranges::sort (pointers, op);
         }
     }
