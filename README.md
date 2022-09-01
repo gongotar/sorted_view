@@ -2,6 +2,9 @@
 
 Produces a sorted view of a given array (`std::vector`, `std::list`, `std::array`, etc.) of objects based on the given comparator (or the default `std::less`), without changing the original array and moving the actual objects. This enables having multiple sorted views of an array based on different comparators at the same time.
 
+# How to use
+Insert the header file `sorted_view.hpp` in your project tree and include it in your code. To compile `sorted_view.hpp` you need at least `c++20`.
+
 ## Manual
 
 You can construct a sorted view of an array `arr` with a custom comparator, as follows:
