@@ -1,5 +1,39 @@
 # sorted_view
-A sorted view on the given std::range type.
+
+Produces a sorted view of a given array (`std::vector`, `std::list`, `std::array`, etc.) of objects based on the given comparator (or the default `std::less`), without changing the original array and moving the actual objects. This enables having multiple sorted views of an array based on different comparators at the same time.
+
+## Manual
+
+You can construct a sorted view of an array (`arr`) with a custom comparator, as follows:
+```
+sorted_view sv (arr, [] (const auto &a, const auto &b) {return a.attr < b.attr;});
+```
+
+The sorted view has `begin ()` and `end ()` that return an iterator of the view. The sorted view is automatically computed when its iterator is called (e.g., in a `for` loop):
+```
+for (const auto &item: sv) {    // here the sorted view is computed, if it is not already sorted.
+    ...
+}
+```
+
+Alternativly, if you know how many items are added to the back of the array, you can manually merge them in the sorted list to prevent sorting the view from scratch, and improve the performance:
+```
+arr.push_back (item1);
+arr.push_back (item2);
+arr.push_back (item3);
+sv.merge_from_back ();      // the recently added items are merged into the sorted view
+```
+
+You can also manually resort the sorted view completely, in the more complicated scenarios:
+```
+sv.resort ();
+```
+
+Or, perform the sort operation if the sorted view is not already sorted:
+```
+sv.check_resort ();
+```
+
 
 ## Sample Usage:
 
