@@ -57,6 +57,9 @@ class sorted_view: public std::ranges::view_interface <sorted_view <Range, Comp>
             if (range->size () > pointers_size) {
                 std::iota (pointers.begin () + pointers_size, pointers.end (), pointers_size);
             }
+            else if (range->size () < pointers_size) {
+                std::iota (pointers.begin (), pointers.end (), 0);
+            }
         }
         else {
             if (merge) {
