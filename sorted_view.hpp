@@ -14,6 +14,8 @@ Copyright 2022 Masoud Gholami
    limitations under the License.
 **/
 
+#ifndef SORTED_VIEW_HPP
+#define SORTED_VIEW_HPP
 
 #include <ranges>
 #include <algorithm>
@@ -169,3 +171,5 @@ public:
     };  
 
 };
+
+#endif
