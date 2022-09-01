@@ -123,7 +123,7 @@ public:
     }
 
     constexpr void check_resort () {
-        if ((pointers.size () != range->size () || op.base_ != &(*range->begin ())) || !std::ranges::is_sorted (pointers, op)) {
+        if (pointers.size () != range->size () || op.base_ != &(*range->begin ()) || !std::ranges::is_sorted (pointers, op)) {
             update_pointers ();
             std::ranges::sort (pointers, op);
         }
@@ -135,8 +135,7 @@ public:
     } 
 
     constexpr Item &at (long i) {
-        check_resort ();
-        return *(&(*range->begin ()) + pointers.at (i));
+        return *(begin () + i);
     }
 
     struct view_iterator {
