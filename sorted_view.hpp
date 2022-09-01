@@ -128,6 +128,16 @@ public:
             std::ranges::sort (pointers, op);
         }
     }
+    
+    
+    constexpr Item &operator [] (long i) const {
+        return *(&(*range->begin ()) + pointers [i]);
+    } 
+
+    constexpr Item &at (long i) {
+        check_resort ();
+        return *(&(*range->begin ()) + pointers.at (i));
+    }
 
     struct view_iterator {
 
