@@ -12,7 +12,7 @@ You can construct a sorted view of an array `arr` with a custom comparator, as f
 sorted_view sv (arr, [] (const auto &a, const auto &b) {return a.attr < b.attr;});
 ```
 
-The sorted view has `begin ()` and `end ()` that return an iterator of the view. The sorted view is automatically computed when its iterator is called (e.g., in a `for` loop):
+The sorted view has the methods `begin ()` and `end ()` that return the iterators of the view. The sorted view is automatically computed when its iterator is called (e.g., in a `for` loop):
 ```
 for (const auto &item: sv) {    // here the sorted view is computed, if it is not already sorted.
     ...
