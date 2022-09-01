@@ -96,9 +96,7 @@ public:
         }
 
     constexpr auto begin () {
-        if (pointers.size () != range->size () || op.base_ != &(*range->begin ())) {
-            resort ();
-        }
+        check_resort ();
         return view_iterator (&(*range->begin ()), &(*pointers.begin ()));
     }
 
@@ -120,8 +118,8 @@ public:
     }
 
     constexpr void check_resort () {
-        update_pointers ();
-        if ((pointers.size () != range->size () || op.base_ != &(*range->begin ())) || !std::is_sorted (pointers, op)) {
+        if ((pointers.size () != range->size () || op.base_ != &(*range->begin ())) || !std::ranges::is_sorted (pointers, op)) {
+            update_pointers ();
             std::ranges::sort (pointers, op);
         }
     }
